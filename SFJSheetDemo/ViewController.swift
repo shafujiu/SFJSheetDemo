@@ -16,7 +16,7 @@ class ViewController: UIViewController {
     }
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        let alert = SFJSheetController(cellHeight: 54, cancelText: "cancel", cancelTextColor: UIColor.blue)
+        let alert = SFJSheetController(style: .topCorner, cellHeight: 54, cancelText: "cancel", cancelTextColor: UIColor.blue)
         alert.addAction(SFJSheetAction(name: "保存", itemColor: UIColor.red, action: {
         }))
         alert.addAction(SFJSheetAction(name: "清空", action: {
@@ -24,6 +24,10 @@ class ViewController: UIViewController {
         alert.addAction(SFJSheetAction(name: "清空", action: {
         }))
         self.present(alert, animated: true, completion: nil)
+        
+        
+//        let alert = SFJBaseAlertController()
+//        present(alert, animated: true, completion: nil)
     }
 
 }

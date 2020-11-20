@@ -36,7 +36,6 @@ class SFJSheetPresentAnimate: NSObject, UIViewControllerAnimatedTransitioning {
     func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
         0.3
     }
-    
 }
 
 class SFJSheetDismissAnimate: NSObject, UIViewControllerAnimatedTransitioning {
@@ -105,15 +104,65 @@ struct SFJSheetAction {
     
 }
 
-class SFJSheetController: UIViewController {
+class SFJSheetController: SFJBaseAlertController {
 
-    private var cellHeight: CGFloat
+    private var kDefaultLeftRightMargin: CGFloat = 8
+    private var kDefaultTableSpaceColor: UIColor = #colorLiteral(red: 0.8174290061, green: 0.8279278278, blue: 0.8440498114, alpha: 1)
+    private var kDefaultCornerRadius: CGFloat = 12
     
-    private let kLeftSpace: CGFloat = 8
-    private let kRightSpace: CGFloat = 8
+    enum SheetStyle {
+        case normal
+        case topCorner
+    }
+    
+    private var cellHeight: CGFloat
+    private var kLeftSpace: CGFloat {
+        switch style {
+        case .normal:
+            return kDefaultLeftRightMargin
+        case .topCorner:
+            return 0
+        }
+    }
+    private var kRightSpace: CGFloat {
+        return kLeftSpace
+    }
+    
+    private var tableBottomSpace: CGFloat {
+        var tableBottomSpace: CGFloat = 8
+        if #available(iOS 11.0, *) {
+            tableBottomSpace = view.safeAreaInsets.bottom
+        }
+        return tableBottomSpace
+    }
+    
+    /// 取消与上方选项的间隙
     private let kOffsetSpace: CGFloat = 8
+    
+    /// 取消与上方选项的间隙的颜色
+    private var tableSpaceColor: UIColor {
+        switch style {
+        case .normal:
+            return tableBgColor
+        case .topCorner:
+            return kDefaultTableSpaceColor
+        }
+    }
+    /// tableview的背景颜色
+    private var tableBgColor: UIColor {
+        switch style {
+        case .normal:
+            return .clear
+        case .topCorner:
+            return .white
+        }
+    }
+    
+    
     private var actions: [SFJSheetAction] = []
     private var cancelAction: SFJSheetAction
+    private var style: SheetStyle = .topCorner
+    
     
     private var tableHeight: CGFloat {
         cellHeight * CGFloat((actions.count + 1)) + kOffsetSpace
@@ -133,6 +182,8 @@ class SFJSheetController: UIViewController {
 //        view.separatorColor =
         view.separatorStyle = .none
         view.register(SFJSheetCell.self, forCellReuseIdentifier: SFJSheetCell.description())
+        view.backgroundColor = tableBgColor
+        view.layer.cornerRadius = kDefaultCornerRadius
         return view
     }()
     
@@ -142,22 +193,23 @@ class SFJSheetController: UIViewController {
     ///   - cellHeight: cellHeight description
     ///   - cancelText: cancelText description
     ///   - cancelTextColor: cancelTextColor description
-    init(cellHeight: CGFloat = 54, cancelText: String = "取消", cancelTextColor: UIColor = UIColor.darkText) {
+    init(style: SheetStyle = .normal, cellHeight: CGFloat = 54, cancelText: String = "取消", cancelTextColor: UIColor = UIColor.darkText) {
         self.cancelAction = SFJSheetAction(name: cancelText, itemColor: cancelTextColor, action: nil)
         self.cellHeight = cellHeight
+        self.style = style
         super.init(nibName: nil, bundle:nil)
-        commentInit()
+//        commentInit()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private func commentInit() {
-        modalPresentationStyle = UIModalPresentationStyle.custom
-        transitioningDelegate = self
-        view.backgroundColor = UIColor.black.withAlphaComponent(0.5)
-    }
+//    private func commentInit() {
+//        modalPresentationStyle = UIModalPresentationStyle.custom
+//        transitioningDelegate = self
+//        view.backgroundColor = UIColor.black.withAlphaComponent(0.5)
+//    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -167,12 +219,8 @@ class SFJSheetController: UIViewController {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        var tableBottomSpace: CGFloat = 8
-        if #available(iOS 11.0, *) {
-            tableBottomSpace = view.safeAreaInsets.bottom
-        }
-        let tableH = cellHeight * CGFloat((actions.count + 1)) + kOffsetSpace
-        let tableY = view.bounds.height - tableH - tableBottomSpace
+        let tableH = cellHeight * CGFloat((actions.count + 1)) + kOffsetSpace + tableBottomSpace
+        let tableY = view.bounds.height - tableH
         let tableW = view.bounds.width - kLeftSpace - kRightSpace
         let tableX = kLeftSpace
         tableView.frame = CGRect(x: tableX, y: tableY, width: tableW, height: tableH)
@@ -181,6 +229,8 @@ class SFJSheetController: UIViewController {
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         dismiss(animated: true, completion: nil)
     }
+    
+    
 }
 
 // MARK: - public api
@@ -231,6 +281,12 @@ extension SFJSheetController: UITableViewDataSource {
         return section == 0 ? CGFloat.leastNormalMagnitude : kOffsetSpace
     }
     
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let view = UIView()
+        view.backgroundColor = tableSpaceColor
+        return view
+    }
+    
     func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
         return CGFloat.leastNormalMagnitude
     }
@@ -240,15 +296,15 @@ extension SFJSheetController: UITableViewDataSource {
 extension SFJSheetController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let action = (indexPath.section == 0) ? actions[indexPath.row] : cancelAction
-        action.action?()
         dismiss(animated: true, completion: nil)
+        action.action?()
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         // section 圆角
         if (cell.responds(to: #selector(getter: UIView.tintColor))){
             if tableView == self.tableView {
-                let cornerRadius: CGFloat = 12.0
+                let cornerRadius: CGFloat = kDefaultCornerRadius
                 cell.backgroundColor = .clear
                 let layer: CAShapeLayer = CAShapeLayer()
                 let path: CGMutablePath = CGMutablePath()
@@ -298,15 +354,21 @@ extension SFJSheetController: UITableViewDelegate {
         }
     }
 }
-
-extension SFJSheetController: UIViewControllerTransitioningDelegate {
+// UIViewControllerTransitioningDelegate
+extension SFJSheetController {
     
-    func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        SFJSheetPresentAnimate()
+    override func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        SFJBasePresentAnimate { 
+            (presented as? SFJSheetController)?.showTableView()
+        }
     }
     
-    func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        SFJSheetDismissAnimate()
+    override func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+//        SFJSheetDismissAnimate()
+        SFJBaseDismissAnimate {
+            (dismissed as? SFJSheetController)?.dismissTableView()
+        }
+        
     }
     
 }

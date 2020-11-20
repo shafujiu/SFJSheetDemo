@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		811DFACD2564CBAD00ABB20D /* SFJBaseAlertController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 811DFACC2564CBAD00ABB20D /* SFJBaseAlertController.swift */; };
 		815CE42C2508C7ED0044C7A6 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 815CE42B2508C7ED0044C7A6 /* AppDelegate.swift */; };
 		815CE4302508C7ED0044C7A6 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 815CE42F2508C7ED0044C7A6 /* ViewController.swift */; };
 		815CE4332508C7ED0044C7A6 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 815CE4312508C7ED0044C7A6 /* Main.storyboard */; };
@@ -35,6 +36,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		811DFACC2564CBAD00ABB20D /* SFJBaseAlertController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SFJBaseAlertController.swift; sourceTree = "<group>"; };
 		815CE4282508C7ED0044C7A6 /* SFJSheetDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SFJSheetDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		815CE42B2508C7ED0044C7A6 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		815CE42F2508C7ED0044C7A6 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -102,6 +104,7 @@
 				815CE42B2508C7ED0044C7A6 /* AppDelegate.swift */,
 				815CE42F2508C7ED0044C7A6 /* ViewController.swift */,
 				815CE45B2508C9FD0044C7A6 /* SFJSheetController.swift */,
+				811DFACC2564CBAD00ABB20D /* SFJBaseAlertController.swift */,
 				815CE4312508C7ED0044C7A6 /* Main.storyboard */,
 				815CE4342508C7F10044C7A6 /* Assets.xcassets */,
 				815CE4362508C7F10044C7A6 /* LaunchScreen.storyboard */,
@@ -260,6 +263,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				815CE4302508C7ED0044C7A6 /* ViewController.swift in Sources */,
+				811DFACD2564CBAD00ABB20D /* SFJBaseAlertController.swift in Sources */,
 				815CE45C2508C9FD0044C7A6 /* SFJSheetController.swift in Sources */,
 				815CE42C2508C7ED0044C7A6 /* AppDelegate.swift in Sources */,
 			);
