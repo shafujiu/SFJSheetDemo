@@ -1,0 +1,6 @@
+framework module Pods_SFJSheetDemo_SFJSheetDemoUITests {
+  umbrella header "Pods-SFJSheetDemo-SFJSheetDemoUITests-umbrella.h"
+
+  export *
+  module * { export * }
+}

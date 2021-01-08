@@ -8,58 +8,58 @@
 
 import UIKit
 
-class SFJSheetPresentAnimate: NSObject, UIViewControllerAnimatedTransitioning {
-    
-    func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
-        
-        guard let toVC = transitionContext.viewController(forKey: UITransitionContextViewControllerKey.to) as? SFJSheetController,
-            let _ = transitionContext.viewController(forKey: UITransitionContextViewControllerKey.from)  else {
-            return
-        }
-        
-        let containerV = transitionContext.containerView
-        let duration = self.transitionDuration(using: transitionContext)
-        
-        containerV.addSubview(toVC.view)
-        toVC.view.frame = containerV.bounds
-        toVC.view.alpha = 0
-        // toVC 的 承载内容的动画
-        toVC.showTableView()
-        
-        UIView.animate(withDuration: duration, animations: {
-            toVC.view.alpha = 1
-        }) { (_) in
-            transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
-        }
-    }
-    
-    func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
-        0.3
-    }
-}
-
-class SFJSheetDismissAnimate: NSObject, UIViewControllerAnimatedTransitioning {
-    func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
-        guard let _ = transitionContext.viewController(forKey: UITransitionContextViewControllerKey.to),
-            let fromVC = transitionContext.viewController(forKey: UITransitionContextViewControllerKey.from) as? SFJSheetController else {
-                return
-        }
-        
-        let duration = self.transitionDuration(using: transitionContext)
-        fromVC.dismissTableView { (_) in
-            
-        }
-        UIView.animate(withDuration: duration, animations: {
-            fromVC.view.alpha = 0
-        }) { (_) in
-            transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
-        }
-    }
-    
-    func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
-        0.25
-    }
-}
+//class SFJSheetPresentAnimate: NSObject, UIViewControllerAnimatedTransitioning {
+//    
+//    func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
+//        
+//        guard let toVC = transitionContext.viewController(forKey: UITransitionContextViewControllerKey.to) as? SFJSheetController,
+//            let _ = transitionContext.viewController(forKey: UITransitionContextViewControllerKey.from)  else {
+//            return
+//        }
+//        
+//        let containerV = transitionContext.containerView
+//        let duration = self.transitionDuration(using: transitionContext)
+//        
+//        containerV.addSubview(toVC.view)
+//        toVC.view.frame = containerV.bounds
+//        toVC.view.alpha = 0
+//        // toVC 的 承载内容的动画
+//        toVC.showTableView()
+//        
+//        UIView.animate(withDuration: duration, animations: {
+//            toVC.view.alpha = 1
+//        }) { (_) in
+//            transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
+//        }
+//    }
+//    
+//    func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
+//        0.3
+//    }
+//}
+//
+//class SFJSheetDismissAnimate: NSObject, UIViewControllerAnimatedTransitioning {
+//    func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
+//        guard let _ = transitionContext.viewController(forKey: UITransitionContextViewControllerKey.to),
+//            let fromVC = transitionContext.viewController(forKey: UITransitionContextViewControllerKey.from) as? SFJSheetController else {
+//                return
+//        }
+//        
+//        let duration = self.transitionDuration(using: transitionContext)
+//        fromVC.dismissTableView { (_) in
+//            
+//        }
+//        UIView.animate(withDuration: duration, animations: {
+//            fromVC.view.alpha = 0
+//        }) { (_) in
+//            transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
+//        }
+//    }
+//    
+//    func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
+//        0.25
+//    }
+//}
 
 class SFJSheetCell: UITableViewCell {
     
@@ -96,11 +96,11 @@ class SFJSheetCell: UITableViewCell {
 }
 
 struct SFJSheetAction {
-    typealias SFJSheetActionBlock = ()->()
+    typealias SFJAlertActionBlock = ()->()
     
     var name: String
     var itemColor: UIColor = UIColor.darkText
-    var action: SFJSheetActionBlock?
+    var action: SFJAlertActionBlock?
     
 }
 
@@ -131,7 +131,7 @@ class SFJSheetController: SFJBaseAlertController {
     private var tableBottomSpace: CGFloat {
         var tableBottomSpace: CGFloat = 8
         if #available(iOS 11.0, *) {
-            tableBottomSpace = view.safeAreaInsets.bottom
+            tableBottomSpace = view.safeAreaInsets.bottom == 0 ? tableBottomSpace : view.safeAreaInsets.bottom
         }
         return tableBottomSpace
     }
@@ -198,18 +198,11 @@ class SFJSheetController: SFJBaseAlertController {
         self.cellHeight = cellHeight
         self.style = style
         super.init(nibName: nil, bundle:nil)
-//        commentInit()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-//    private func commentInit() {
-//        modalPresentationStyle = UIModalPresentationStyle.custom
-//        transitioningDelegate = self
-//        view.backgroundColor = UIColor.black.withAlphaComponent(0.5)
-//    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -229,8 +222,6 @@ class SFJSheetController: SFJBaseAlertController {
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         dismiss(animated: true, completion: nil)
     }
-    
-    
 }
 
 // MARK: - public api
@@ -364,11 +355,9 @@ extension SFJSheetController {
     }
     
     override func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-//        SFJSheetDismissAnimate()
         SFJBaseDismissAnimate {
             (dismissed as? SFJSheetController)?.dismissTableView()
         }
-        
     }
     
 }
